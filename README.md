@@ -53,6 +53,40 @@ DEBUG=app:http,app:db go run main.go
 DEBUG=* go run main.go
 ```
 
+#### Pattern Matching
+
+The `DEBUG` environment variable supports several pattern matching techniques:
+
+```bash
+# Exact match: enable only the exact scope
+DEBUG=app:http go run main.go
+
+# Hierarchical match: enable a scope and all its children
+# This enables app, app:http, app:http:get, etc.
+DEBUG=app go run main.go
+
+# Prefix match: enable all scopes that start with prefix
+# This enables app:http, app:http:get, etc.
+DEBUG=app: go run main.go
+
+# Wildcard match: enable all scopes that match the pattern
+# This enables app:get, app:post, but not app:http:get
+DEBUG=app:* go run main.go
+
+# Middle wildcards: enable all matching scopes
+# This enables app:http:get, app:api:get, etc.
+DEBUG=app:*:get go run main.go
+
+# Multiple wildcards: match more complex patterns
+# This enables app:http:get:v1, app:api:get:v2, etc.
+DEBUG=app:*:get:* go run main.go
+```
+
+Multiple patterns can be combined with commas:
+```bash
+DEBUG=app:http,database:*,auth:oauth:* go run main.go
+```
+
 Trace logs will be printed to stdout with the scope name as a prefix:
 
 ```
@@ -108,9 +142,10 @@ DEBUG=* go run example/main.go
 - Zero overhead when tracing is disabled
 - Simple API with string and formatted string support
 - Scope-based filtering for selective debugging
+- Advanced pattern matching for flexible debugging control
 - No external dependencies
 - Namespace support with colons for logical grouping
-- Wildcard support for enabling all traces
+- Wildcard support with flexible patterns (*, a:*, a:*:c, etc.)
 
 ## License
 

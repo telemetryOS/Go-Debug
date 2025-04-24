@@ -114,4 +114,6 @@ DEBUG=* go run example/main.go
 
 ## License
 
-MIT
+This project is licensed under the MIT License with an Attribution Requirement - see the [LICENSE](LICENSE) file for details.
+
+When using this software in your projects or integrating it into your products, please maintain the original copyright notice and include a link to the original repository (https://github.com/telemetrytv/trace).

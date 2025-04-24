@@ -42,18 +42,99 @@ func (s *Scope) maybeLog(message string) {
 	if debug == "" {
 		return
 	}
-	
+
 	if debug == "*" {
 		fmt.Printf("%s: %s\n", s.scopeName, message)
 		return
 	}
-	
+
 	scopes := strings.Split(debug, ",")
 	for _, scope := range scopes {
 		scope = strings.TrimSpace(scope)
+
 		if scope == s.scopeName {
 			fmt.Printf("%s: %s\n", s.scopeName, message)
 			return
 		}
+
+		if strings.HasSuffix(scope, ":") && strings.HasPrefix(s.scopeName, scope) {
+			fmt.Printf("%s: %s\n", s.scopeName, message)
+			return
+		}
+
+		if !strings.Contains(scope, ":") {
+			parts := strings.Split(s.scopeName, ":")
+			if parts[0] == scope {
+				fmt.Printf("%s: %s\n", s.scopeName, message)
+				return
+			}
+		}
+
+		if strings.Contains(scope, "*") && matchPattern(scope, s.scopeName) {
+			fmt.Printf("%s: %s\n", s.scopeName, message)
+			return
+		}
 	}
+}
+
+func matchPattern(pattern, scopeName string) bool {
+	if pattern == "*" {
+		return true
+	}
+
+	patternParts := strings.Split(pattern, ":")
+	scopeParts := strings.Split(scopeName, ":")
+
+	if patternParts[len(patternParts)-1] == "*" {
+		if len(patternParts)-1 > len(scopeParts) {
+			return false
+		}
+
+		for i := 0; i < len(patternParts)-1; i++ {
+			if patternParts[i] != "*" && patternParts[i] != scopeParts[i] {
+				return false
+			}
+		}
+		return true
+	}
+
+	nonWildcardCount := 0
+	for _, part := range patternParts {
+		if part != "*" {
+			nonWildcardCount++
+		}
+	}
+
+	if nonWildcardCount > len(scopeParts) {
+		return false
+	}
+
+	if len(patternParts) != len(scopeParts) && !containsMiddleWildcard(patternParts) {
+		return false
+	}
+
+	return matchParts(patternParts, scopeParts)
+}
+
+func containsMiddleWildcard(patternParts []string) bool {
+	for i := 0; i < len(patternParts)-1; i++ {
+		if patternParts[i] == "*" {
+			return true
+		}
+	}
+	return false
+}
+
+func matchParts(patternParts, scopeParts []string) bool {
+	if len(patternParts) != len(scopeParts) {
+		return false
+	}
+
+	for i, patternPart := range patternParts {
+		if patternPart != "*" && patternPart != scopeParts[i] {
+			return false
+		}
+	}
+
+	return true
 }

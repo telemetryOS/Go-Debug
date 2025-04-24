@@ -138,3 +138,66 @@ func TestDebugWithWhitespace(t *testing.T) {
 	expected := "test: This should be printed\n"
 	assert.Equal(t, expected, output, "Expected matching output with DEBUG containing whitespace")
 }
+
+func TestPatternMatching(t *testing.T) {
+	tests := []struct {
+		debugValue  string
+		scopeName   string
+		shouldMatch bool
+		message     string
+	}{
+		// Hierarchical matching - 'a' matches 'a', 'a:b', 'a:b:c', etc.
+		{"a", "a", true, "Debug 'a' should match scope 'a'"},
+		{"a", "a:b", true, "Debug 'a' should match scope 'a:b'"},
+		{"a", "a:b:c", true, "Debug 'a' should match scope 'a:b:c'"},
+		{"a", "b:c", false, "Debug 'a' should not match scope 'b:c'"},
+		
+		// Prefix matching - 'a:' matches 'a:b', 'a:c', 'a:b:c', etc.
+		{"a:", "a:b", true, "Debug 'a:' should match scope 'a:b'"},
+		{"a:", "a:b:c", true, "Debug 'a:' should match scope 'a:b:c'"},
+		{"a:", "b:c", false, "Debug 'a:' should not match scope 'b:c'"},
+		
+		// Simple wildcard matching
+		{"a:*", "a:b", true, "Debug 'a:*' should match scope 'a:b'"},
+		{"a:*", "a:b:c", true, "Debug 'a:*' should match scope 'a:b:c'"},
+		{"a:*", "b:c", false, "Debug 'a:*' should not match scope 'b:c'"},
+		
+		// Middle wildcard matching - 'a:*:c' matches 'a:b:c', 'a:x:c', etc.
+		{"a:*:c", "a:b:c", true, "Debug 'a:*:c' should match scope 'a:b:c'"},
+		{"a:*:c", "a:xyz:c", true, "Debug 'a:*:c' should match scope 'a:xyz:c'"},
+		{"a:*:c", "a:b:c:d", false, "Debug 'a:*:c' should not match scope 'a:b:c:d'"},
+		{"a:*:c", "a:b:d", false, "Debug 'a:*:c' should not match scope 'a:b:d'"},
+		
+		// Multiple wildcards - 'a:*:*:d' matches 'a:b:c:d', 'a:x:y:d', etc.
+		{"a:*:*:d", "a:b:c:d", true, "Debug 'a:*:*:d' should match scope 'a:b:c:d'"},
+		{"a:*:*:d", "a:x:y:d", true, "Debug 'a:*:*:d' should match scope 'a:x:y:d'"},
+		{"a:*:*:d", "a:b:c:e", false, "Debug 'a:*:*:d' should not match scope 'a:b:c:e'"},
+		
+		// Leading wildcard - '*:c' matches 'a:c', 'b:c', etc.
+		{"*:c", "a:c", true, "Debug '*:c' should match scope 'a:c'"},
+		{"*:c", "b:c", true, "Debug '*:c' should match scope 'b:c'"},
+		{"*:c", "a:b:c", false, "Debug '*:c' should not match scope 'a:b:c'"},
+		
+		// Wildcard at both ends - 'a:*:c:*' matches 'a:b:c:d', 'a:x:c:y', etc.
+		{"a:*:c:*", "a:b:c:d", true, "Debug 'a:*:c:*' should match scope 'a:b:c:d'"},
+		{"a:*:c:*", "a:x:c:y", true, "Debug 'a:*:c:*' should match scope 'a:x:c:y'"},
+		{"a:*:c:*", "a:b:d:e", false, "Debug 'a:*:c:*' should not match scope 'a:b:d:e'"},
+	}
+	
+	for _, test := range tests {
+		os.Setenv("DEBUG", test.debugValue)
+		defer os.Unsetenv("DEBUG")
+		
+		output := captureOutput(func() {
+			scope := trace.Bind(test.scopeName)
+			scope.Trace("test message")
+		})
+		
+		if test.shouldMatch {
+			expected := test.scopeName + ": test message\n"
+			assert.Equal(t, expected, output, test.message)
+		} else {
+			assert.Empty(t, output, test.message)
+		}
+	}
+}

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/telemetryos/godebug/debug"
+	"github.com/telemetryos/Go-Debug/debug"
 )
 
 func captureOutput(f func()) string {

@@ -1,4 +1,4 @@
-module github.com/telemetryos/godebug
+module github.com/telemetryos/Go-Debug
 
 go 1.24.2
 

@@ -1,4 +1,4 @@
-module github.com/telemetrytv/trace
+module github.com/telemetryos/godebug
 
 go 1.24.2
 

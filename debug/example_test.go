@@ -1,17 +1,17 @@
-package main
+package debug_test
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/telemetrytv/trace"
+	"github.com/telemetryos/godebug/debug"
 )
 
 // Initialize different debug scopes for different parts of the application
 var (
-	dbDebug  = trace.Bind("app:db")
-	httpDebug = trace.Bind("app:http")
-	mainDebug = trace.Bind("app:main")
+	dbDebug   = debug.Bind("app:db")
+	httpDebug = debug.Bind("app:http")
+	mainDebug = debug.Bind("app:main")
 )
 
 func simulateDBQuery() {
@@ -30,20 +30,28 @@ func simulateHTTPRequest() {
 	httpDebug.Trace("Sending HTTP response")
 }
 
-func main() {
+func Example() {
 	mainDebug.Trace("Application starting")
-	
+
 	fmt.Println("Running application...")
 	fmt.Println("To see debug traces, run with DEBUG environment variable set:")
 	fmt.Println("DEBUG=app:main,app:http,app:db go run main.go  # Show all traces")
 	fmt.Println("DEBUG=app:db go run main.go                    # Show only database traces")
 	fmt.Println("DEBUG=* go run main.go                         # Show all traces with wildcard")
-	
+
 	mainDebug.Trace("Initializing services")
-	
+
 	simulateHTTPRequest()
 	simulateDBQuery()
-	
+
 	mainDebug.Trace("Application shutting down")
 	fmt.Println("Application finished")
+
+	// Output:
+	// Running application...
+	// To see debug traces, run with DEBUG environment variable set:
+	// DEBUG=app:main,app:http,app:db go run main.go  # Show all traces
+	// DEBUG=app:db go run main.go                    # Show only database traces
+	// DEBUG=* go run main.go                         # Show all traces with wildcard
+	// Application finished
 }

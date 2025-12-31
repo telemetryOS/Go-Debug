@@ -1,7 +1,7 @@
-// Package trace provides a lightweight tracing system for Go libraries and applications.
+// Package debug provides a lightweight tracing system for Go libraries and applications.
 // It allows library authors to add diagnostic logs that can be enabled by end users
 // via the DEBUG environment variable.
-package trace
+package debug
 
 import (
 	"fmt"

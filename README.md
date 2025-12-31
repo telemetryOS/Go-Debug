@@ -1,11 +1,11 @@
-# Trace
+# Go-Debug
 
-A lightweight tracing library for Go packages. Trace allows library authors to add diagnostic logging that end users can enable via a DEBUG environment variable.
+A lightweight tracing library for Go packages. Go-Debug allows library authors to add diagnostic logging that end users can enable via a DEBUG environment variable.
 
 ## Installation
 
 ```bash
-go get github.com/telemetrytv/trace
+go get github.com/telemetryos/godebug/debug
 ```
 
 ## Usage
@@ -17,17 +17,17 @@ Library authors can add trace logs to their packages using the `Trace` function.
 ```go
 package mylib
 
-import "github.com/telemetrytv/trace"
+import "github.com/telemetryos/godebug/debug"
 
 // Create a scope for your library
-var debug = trace.Bind("mylib")
+var dbg = debug.Bind("mylib")
 
 func DoSomething() {
-    debug.Trace("Starting DoSomething")
-    
+    dbg.Trace("Starting DoSomething")
+
     // Complex operations...
-    
-    debug.Tracef("Processing %d items", count)
+
+    dbg.Tracef("Processing %d items", count)
 }
 ```
 
@@ -101,7 +101,7 @@ mylib: Processing 5 items
 Creates a new named scope for tracing.
 
 ```go
-debug := trace.Bind("mylib")
+dbg := debug.Bind("mylib")
 ```
 
 ### `(s *Scope) Trace(message string)`
@@ -109,7 +109,7 @@ debug := trace.Bind("mylib")
 Logs a simple message if the scope is enabled.
 
 ```go
-debug.Trace("Connection established")
+dbg.Trace("Connection established")
 ```
 
 ### `(s *Scope) Tracef(format string, args ...any)`
@@ -117,7 +117,7 @@ debug.Trace("Connection established")
 Logs a formatted message if the scope is enabled. Uses the same formatting rules as `fmt.Printf`.
 
 ```go
-debug.Tracef("Processing item %d of %d", i, total)
+dbg.Tracef("Processing item %d of %d", i, total)
 ```
 
 ## Example
@@ -151,4 +151,4 @@ DEBUG=* go run example/main.go
 
 This project is licensed under the MIT License with an Attribution Requirement - see the [LICENSE](LICENSE) file for details.
 
-When using this software in your projects or integrating it into your products, please maintain the original copyright notice and include a link to the original repository (https://github.com/telemetrytv/trace).
+When using this software in your projects or integrating it into your products, please maintain the original copyright notice and include a link to the original repository (https://github.com/telemetryos/godebug).

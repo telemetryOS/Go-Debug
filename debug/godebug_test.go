@@ -1,4 +1,4 @@
-package trace_test
+package debug_test
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/telemetrytv/trace"
+	"github.com/telemetryos/godebug/debug"
 )
 
 func captureOutput(f func()) string {
@@ -28,7 +28,7 @@ func captureOutput(f func()) string {
 }
 
 func TestBindCreatesScope(t *testing.T) {
-	scope := trace.Bind("test")
+	scope := debug.Bind("test")
 	assert.NotNil(t, scope, "Bind should return a non-nil Scope")
 }
 
@@ -37,7 +37,7 @@ func TestTraceWithoutDebugEnv(t *testing.T) {
 	os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Trace("This should not be printed")
 	})
 
@@ -50,7 +50,7 @@ func TestTraceWithMatchingDebugEnv(t *testing.T) {
 	defer os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Trace("This should be printed")
 	})
 
@@ -64,7 +64,7 @@ func TestTraceWithNonMatchingDebugEnv(t *testing.T) {
 	defer os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Trace("This should not be printed")
 	})
 
@@ -77,7 +77,7 @@ func TestTraceWithWildcardDebugEnv(t *testing.T) {
 	defer os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Trace("This should be printed")
 	})
 
@@ -91,7 +91,7 @@ func TestTraceWithMultipleScopesInDebugEnv(t *testing.T) {
 	defer os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Trace("This should be printed")
 	})
 
@@ -105,7 +105,7 @@ func TestTracefWithMatchingDebugEnv(t *testing.T) {
 	defer os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Tracef("Count: %d", 42)
 	})
 
@@ -118,7 +118,7 @@ func TestTracefWithoutDebugEnv(t *testing.T) {
 	os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Tracef("Count: %d", 42)
 	})
 
@@ -131,7 +131,7 @@ func TestDebugWithWhitespace(t *testing.T) {
 	defer os.Unsetenv("DEBUG")
 
 	output := captureOutput(func() {
-		scope := trace.Bind("test")
+		scope := debug.Bind("test")
 		scope.Trace("This should be printed")
 	})
 
@@ -189,7 +189,7 @@ func TestPatternMatching(t *testing.T) {
 		defer os.Unsetenv("DEBUG")
 		
 		output := captureOutput(func() {
-			scope := trace.Bind(test.scopeName)
+			scope := debug.Bind(test.scopeName)
 			scope.Trace("test message")
 		})
 		

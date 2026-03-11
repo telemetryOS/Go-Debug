@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/telemetryos/Go-Debug/debug"
+	"github.com/telemetryos/go-debug/debug"
 )
 
 // Initialize different debug scopes for different parts of the application

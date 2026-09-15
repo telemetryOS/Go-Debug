@@ -1,6 +1,6 @@
 module github.com/telemetryos/go-debug
 
-go 1.24.2
+go 1.27.1
 
 require github.com/stretchr/testify v1.10.0
 
